@@ -11,3 +11,13 @@ CLI-program which takes XHTML documents and populates it with:
 At the moment this project is at the pilot test stage.
 
 I'm looking forward to find collaborators who are eager and passionate to bring this idea into a full-fledged web framework ...
+
+## Quickstart
+
+see the `beispiel` directory for examples.
+
+Just clone and run it via cargo with the following input paths:
+
+```
+cargo run -- <input_file> <template_diretory> <output_file>
+```
