@@ -12,7 +12,7 @@ use std::io::Read;
 use toml;
 
 use beide::probe;
-use csvpilot::{reihe_einfuellen, werte_ersetzen};
+use csvpilot::{csv_tag_einfuellen, reihe_einfuellen, werte_ersetzen};
 use motor::vorlage;
 use qwen::transform;
 use schreiben::beispiel_person;
@@ -51,7 +51,7 @@ fn main() {
         .expect("The path provieded via CLI could not be read!");
 
     // let mut dateien = werte_ersetzen(file).expect("etwas schiefgelaufen");
-    let mut dateien = reihe_einfuellen(args.input_path, args.template_path).expect("error!");
+    let mut dateien = csv_tag_einfuellen(file, args.template_path).expect("error!");
 
     fs::write(args.output_path, &dateien).expect("msg");
 
