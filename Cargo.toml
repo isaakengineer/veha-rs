@@ -1,0 +1,13 @@
+[package]
+name = "had"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+clap_derive = "4.5.28"
+csv = "1.3.1"
+quick-xml = { version = "0.37", features = ["serialize"] }
+serde = { version = "1.0", features = ["derive"] }
+toml = "0.8.20"
+xml = "0.8"
