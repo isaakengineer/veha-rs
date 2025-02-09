@@ -1,5 +1,6 @@
 mod beide;
 mod csvpilot;
+mod mdmotor;
 mod motor;
 mod qwen;
 mod schreiben;
@@ -51,9 +52,17 @@ fn main() {
         .expect("The path provieded via CLI could not be read!");
 
     // let mut dateien = werte_ersetzen(file).expect("etwas schiefgelaufen");
-    let mut dateien = csv_tag_einfuellen(file, args.template_path).expect("error!");
+    // let mut dateien = csv_tag_einfuellen(file, args.template_path).expect("error!");
+    let mut dateien =
+        mdmotor::werte_ersetzen(file, args.template_path.clone()).expect("something went wrong");
 
-    fs::write(args.output_path, &dateien).expect("msg");
+    fs::write(args.output_path.clone(), &dateien).expect("msg");
+
+    file = std::fs::read_to_string(args.output_path.clone()).expect("err");
+
+    let mut dateien = csv_tag_einfuellen(file, args.template_path).expect("something went wrong");
+
+    fs::write(args.output_path.clone(), &dateien).expect("msg");
 
     // vorlage(file, args.template_path);
 
