@@ -153,64 +153,83 @@ pub fn werte_ersetzen(
 
     let mut column_anfang_fahne = false;
 
+    let mut tags: Vec<String> = Vec::new();
+    let mut column_zahl = 0;
+
     loop {
         match xml_reader.read_event() {
-            Ok(Event::Start(ereignis)) if ereignis.local_name().as_ref() == b"column" => {
+            Ok(Event::Start(e)) if e.local_name().as_ref() == b"column" => {
+                println!("Anfag gefunden");
                 column_anfang_fahne = true;
+                column_zahl = column_zahl + 1;
+
                 let mut wert: String;
                 let mut tag: String;
-                if let Some(name_attr) = ereignis
-                    .attributes()
-                    .find(|attr| attr.clone().unwrap().key.local_name().as_ref() == b"content")
-                {
-                    let wert_cow = name_attr.unwrap().value;
-                    wert = match wert_cow {
-                        Cow::Borrowed(borrowed) => String::from_utf8(borrowed.to_vec()).unwrap(),
-                        Cow::Owned(owned) => String::from_utf8(owned).unwrap(),
-                    };
-                    if let Some(name_attr) = ereignis
-                        .attributes()
-                        .find(|attr| attr.clone().unwrap().key.local_name().as_ref() == b"tag")
-                    {
-                        let tag_cow = name_attr.unwrap().value;
-                        tag = match tag_cow {
-                            Cow::Borrowed(borrowed) => {
-                                String::from_utf8(borrowed.to_vec()).unwrap()
-                            }
-                            Cow::Owned(owned) => String::from_utf8(owned).unwrap(),
-                        };
-                        let mut elem_start = BytesStart::new(tag.clone());
-                        elem_start.extend_attributes(
-                            ereignis
-                                .attributes()
-                                .filter(|attr| {
-                                    attr.clone().unwrap().key.local_name().as_ref() != b"content"
-                                        && attr.clone().unwrap().key.local_name().as_ref() != b"tag"
-                                })
-                                .map(|attr| attr.unwrap()),
-                        );
+                if let Some(wert) = attributenwert_lesen(e.clone(), "content") {
+                    if let Some(tag) = attributenwert_lesen(e.clone(), "tag") {
+                        if let Some(attribute) = attributenwert_lesen(e.clone(), "attribute") {
+                            let mut elem_start = BytesStart::new(tag.clone());
+                            elem_start.extend_attributes(
+                                e.attributes()
+                                    .filter(|attr| {
+                                        attr.clone().unwrap().key.local_name().as_ref()
+                                            != b"content"
+                                            && attr.clone().unwrap().key.local_name().as_ref()
+                                                != b"tag"
+                                            && attr.clone().unwrap().key.local_name().as_ref()
+                                                != b"attribute"
+                                    })
+                                    .map(|attr| attr.unwrap()),
+                            );
 
-                        xml_writer.write_event(Event::Start(elem_start));
+                            let w = match records.get(wert.as_str()) {
+                                Some(w) => w,
+                                None => {
+                                    println!("Wert nicht vorhanden!");
+                                    ""
+                                }
+                            };
+                            elem_start.push_attribute((attribute.as_bytes(), w.as_bytes()));
+                            xml_writer.write_event(Event::Start(elem_start));
+                            tags.push(tag);
+                            // let mut elem_end = BytesEnd::new(tag);
+                            // xml_writer.write_event(Event::End(elem_end));
+                        } else {
+                            let mut elem_start = BytesStart::new(tag.clone());
+                            elem_start.extend_attributes(
+                                e.attributes()
+                                    .filter(|attr| {
+                                        attr.clone().unwrap().key.local_name().as_ref()
+                                            != b"content"
+                                            && attr.clone().unwrap().key.local_name().as_ref()
+                                                != b"tag"
+                                    })
+                                    .map(|attr| attr.unwrap()),
+                            );
 
-                        let w = match records.get(wert.as_str()) {
-                            Some(w) => w,
-                            None => {
-                                println!("Wert nicht vorhanden!");
-                                ""
-                            }
-                        };
-
-                        xml_writer.write_event(Event::Text(BytesText::new(w)));
-
-                        let mut elem_end = BytesEnd::new(tag);
-                        xml_writer.write_event(Event::End(elem_end));
+                            let w = match records.get(wert.as_str()) {
+                                Some(w) => w,
+                                None => {
+                                    println!("Wert nicht vorhanden!");
+                                    ""
+                                }
+                            };
+                            xml_writer.write_event(Event::Start(elem_start));
+                            xml_writer.write_event(Event::Text(BytesText::new(w)));
+                            tags.push(tag);
+                            // let mut elem_end = BytesEnd::new(tag);
+                            // xml_writer.write_event(Event::End(elem_end));
+                        }
                     }
                 }
             }
-            Ok(Event::End(ereignis))
-                if ereignis.local_name().as_ref() == b"column" && column_anfang_fahne =>
-            {
+            Ok(Event::End(e)) if e.local_name().as_ref() == b"column" => {
                 column_anfang_fahne = false;
+                column_zahl = column_zahl - 1;
+                println!("tags = {:?}", tags);
+                let tag = tags.pop().unwrap();
+                let mut elem_end = BytesEnd::new(tag);
+                xml_writer.write_event(Event::End(elem_end));
             }
             Ok(Event::Eof) => break,
             Ok(e) => {
