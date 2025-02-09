@@ -1,4 +1,5 @@
 mod beide;
+mod csvpilot;
 mod motor;
 mod qwen;
 mod schreiben;
@@ -11,6 +12,7 @@ use std::io::Read;
 use toml;
 
 use beide::probe;
+use csvpilot::werte_ersetzen;
 use motor::vorlage;
 use qwen::transform;
 use schreiben::beispiel_person;
@@ -19,6 +21,7 @@ use schreiben::beispiel_person;
 struct Cli {
     input_path: std::path::PathBuf,
     template_path: std::path::PathBuf,
+    output_path: std::path::PathBuf,
 }
 
 #[derive(Debug, Deserialize)]
@@ -42,11 +45,18 @@ fn main() {
     // probe();
 
     let args = Cli::parse();
+    // println!("path: {:?}", args.input_path);
+
     let mut file = std::fs::read_to_string(&args.input_path)
         .expect("The path provieded via CLI could not be read!");
 
-    vorlage(file, args.template_path);
-    println!("path: {:?}", args.input_path);
+    let mut dateien = werte_ersetzen(file).expect("etwas schiefgelaufen");
+
+    println!("augabe: {:?}", dateien.clone());
+
+    fs::write(args.output_path, &dateien).expect("msg");
+
+    // vorlage(file, args.template_path);
 
     // let toml_str =
     //     fs::read_to_string("beispiel/konfig.toml").expect("Failed to read Cargo.toml file");
