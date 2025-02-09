@@ -60,7 +60,14 @@ fn main() {
 
     file = std::fs::read_to_string(args.output_path.clone()).expect("err");
 
-    let mut dateien = csv_tag_einfuellen(file, args.template_path).expect("something went wrong");
+    let mut dateien =
+        csv_tag_einfuellen(file, args.template_path.clone()).expect("something went wrong");
+
+    fs::write(args.output_path.clone(), &dateien).expect("msg");
+
+    file = std::fs::read_to_string(args.output_path.clone()).expect("err");
+
+    dateien = transform(file, args.template_path).expect("msg");
 
     fs::write(args.output_path.clone(), &dateien).expect("msg");
 
