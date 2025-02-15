@@ -154,9 +154,9 @@ For a quick example of what this tool is capable of, please look in the [beispie
 
 -
 
-## About
+## About (extended edition)
 
-The German name for our code-base can be translated to: "Hypertext Markup Language Printer".
+The German name for our code-base can be translated to: "Melter for Extendible Hypertext Markup Language" (Verschmelzer erweiterbare Hypertext-Auszeichnungssprache).
 
 CLI-program which takes XHTML documents and populates it with:
 

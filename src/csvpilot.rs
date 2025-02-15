@@ -159,7 +159,7 @@ pub fn werte_ersetzen(
     loop {
         match xml_reader.read_event() {
             Ok(Event::Start(e)) if e.local_name().as_ref() == b"column" => {
-                println!("Anfag gefunden");
+                // println!("Anfag gefunden");
                 column_anfang_fahne = true;
                 column_zahl = column_zahl + 1;
 

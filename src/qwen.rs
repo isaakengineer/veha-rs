@@ -40,7 +40,7 @@ pub fn transform(
                     // Construct the path to the template file
                     let template_path = vorlagen_dir.join(name);
 
-                    println!("vorlage");
+                    // println!("vorlage");
 
                     if template_path.exists() {
                         // Read and process the template file
@@ -51,14 +51,14 @@ pub fn transform(
                         // let mut template_reader = BufReader::new(template_content.as_bytes());
                         let mut template_xml_reader = Reader::from_str(&template_content);
                         template_xml_reader.config_mut().trim_text(true);
-                        println!("vorlage 2");
+                        // println!("vorlage 2");
                         // for event in events {
                         // match event? {
                         let mut end_found = false;
                         loop {
                             match template_xml_reader.read_event() {
                                 Ok(Event::Start(slot)) if slot.name().as_ref() == b"slot" => {
-                                    println!("match 1");
+                                    // println!("match 1");
                                     // Write the <slot> tag
                                     // writer.write_event(Event::Start(start.clone()))?;
 
@@ -99,7 +99,7 @@ pub fn transform(
                                     // DO NOTHING
                                 }
                                 Ok(event) => {
-                                    println!("match 2");
+                                    // println!("match 2");
                                     // write everything else from template file as is
                                     writer.write_event(event)?;
                                 }

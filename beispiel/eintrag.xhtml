@@ -1,15 +1,18 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
 "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Conforming XHTML 1.1 Template</title>
 
-<head>
-
-<title>Conforming XHTML 1.1 Template</title>
-
-</head>
-
-<body>
-<slot></slot>
-</body>
-
+	</head>
+	<style>
+		body { padding: 2rem; }
+		.row { margin: 1rem; max-width: 40rem; }
+		.row > footer { font-size: .7rem }
+		.row > .title { display: flex; justify-content: space-between; }
+		.text { max-width: 38rem; }
+	</style>
+	<body>
+		<slot></slot>
+	</body>
 </html>
