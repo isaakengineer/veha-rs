@@ -28,7 +28,7 @@ pub fn transform(
                 // Extract the value of the 'name' attribute
                 if let Some(name_attr) = vorlage
                     .attributes()
-                    .find(|attr| attr.clone().unwrap().key.local_name().as_ref() == b"name")
+                    .find(|attr| attr.clone().unwrap().key.local_name().as_ref() == b"src")
                 {
                     let template_name = name_attr.unwrap().value;
 
@@ -38,7 +38,7 @@ pub fn transform(
                     };
 
                     // Construct the path to the template file
-                    let template_path = vorlagen_dir.join(name).with_extension("xhtml");
+                    let template_path = vorlagen_dir.join(name);
 
                     println!("vorlage");
 
