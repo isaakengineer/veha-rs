@@ -42,16 +42,19 @@ In order to use this programm at its current development stage, you need to prov
 
 #### VEHA norms and standards
 
+Notice: at the present level of the maturity of our codebase, please do not try closing XML (or HTML) tags within the same line; for example `<tag />` might have strange and unexpected behaviors.
+
 ##### XHTML Template file (Required)
 
 in the input file, you need to wrap all you wish to be included in your output file within a `<vorlage>` tag:
 
 ```
 <vorlage src="./relative-path-to-template.xhtml">
+<...>
 </vorlage>
 ```
 
-and within your template directory, you need to include an empty `<slot>` tag which will be filled with the content between the pervious tags.
+and within your template directory, you need to include an empty `<slot>` tag which will be replaced with the content between the pervious tags.
 Below is an example of a typical template file for a webpage:
 
 ```
@@ -86,6 +89,8 @@ In the above example the final tag will look something like this:
 
 If you are unfamiliar with CSV files, the following might appear a bit of a strange behavior, and we are option to suggestion for change, but at the moment here is how the norm for our CSV-tag behaves:
 
+###### Entrance tag
+
 ```
 <csv src="test">
 	<...>
@@ -94,6 +99,8 @@ If you are unfamiliar with CSV files, the following might appear a bit of a stra
 	<...>
 </csv>
 ```
+
+###### Required row XML-template component file
 
 ## Description
 
