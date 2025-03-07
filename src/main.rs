@@ -74,8 +74,8 @@ fn main() {
 
     file = std::fs::read_to_string(args.output_path.clone()).expect("err");
 
-    let mut dateien = teramotor::process_via_tera(file, &args.template_path.as_path())
-        .expect("something went wrong");
+    let mut dateien =
+        teramotor::motor(file, &args.template_path.as_path()).expect("something went wrong");
 
     fs::write(args.output_path.clone(), &dateien).expect("msg");
     // vorlage(file, args.template_path);

@@ -226,7 +226,7 @@ pub fn werte_ersetzen(
             Ok(Event::End(e)) if e.local_name().as_ref() == b"column" => {
                 column_anfang_fahne = false;
                 column_zahl = column_zahl - 1;
-                println!("tags = {:?}", tags);
+                // println!("tags = {:?}", tags);
                 let tag = tags.pop().unwrap();
                 let mut elem_end = BytesEnd::new(tag);
                 xml_writer.write_event(Event::End(elem_end));
