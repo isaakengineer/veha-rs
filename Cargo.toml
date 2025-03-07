@@ -7,7 +7,13 @@ description = "Opinionanted static website generator: a CLI programm [written in
 readme = "README.md"
 homepage = "https://veha.techne.schloosser.com"
 repository = "https://git.schloosser.net/veha/veha-rs"
-keywords = ["xhtml", "csv", "md", "template", "ssg", "static website generator"]
+keywords = [
+	"xhtml",
+	"modular website generator",
+	"static website",
+	"ssg",
+	"static website generator",
+]
 categories = ["command-line-utilities"]
 
 edition = "2021"

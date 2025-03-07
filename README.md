@@ -2,7 +2,7 @@
 
 **VEHA** is a CLI programm [written in Rust] to automate merging modular written data into a component based XHTML web-page.
 
-Supported data formats: CSV, MD, and XHTML [as a wrapper template]
+Supported data formats: Toml, CSV, MD, and XHTML [as a wrapper template]
 
 Future support planned: SQLite, LaTex, etc [to suggest a new input format open an issue or contact the author via email please].
 
@@ -68,6 +68,15 @@ Below is an example of a typical template file for a webpage:
 		<slot></slot>
 	</body>
 </html>
+```
+
+##### Template Enging (Optional)
+
+If you are familiar with [Tera](), you can use the `tera` tag to read and replace data from a Toml file;
+Since it is possible to use the `tera` tag multiple times, you can optionally supply a `name` attribute:
+
+```
+<tera src="./relative-path/to/config.toml" name="optional"></tera>
 ```
 
 ##### Markdown (Optional)
