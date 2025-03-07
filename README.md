@@ -70,13 +70,13 @@ Below is an example of a typical template file for a webpage:
 </html>
 ```
 
-##### Template Enging (Optional)
+##### Toml (Optional)
 
-If you are familiar with [Tera](), you can use the `tera` tag to read and replace data from a Toml file;
+If you are familiar with [Tera](), you can use the `toml` tag to read and replace data from a Toml file;
 Since it is possible to use the `tera` tag multiple times, you can optionally supply a `name` attribute:
 
 ```
-<tera src="./relative-path/to/config.toml" name="optional"></tera>
+<toml src="./relative-path/to/config.toml" name="optional"></toml>
 ```
 
 ##### Markdown (Optional)
