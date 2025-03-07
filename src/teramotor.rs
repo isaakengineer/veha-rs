@@ -27,7 +27,7 @@ pub fn motor(input_xhtml: String, base_dir: &Path) -> Result<String, Box<dyn std
     // let mut buf = Vec::new();
     loop {
         match reader.read_event() {
-            Ok(Event::Start(e)) if e.local_name().as_ref() == b"tera" => {
+            Ok(Event::Start(e)) if e.local_name().as_ref() == b"toml" => {
                 // Parse the `<tera />` tag attributes
                 let attrs = parse_tag_attrs(&e)?;
                 if let (Some(src)) = (attrs.get("src")) {
@@ -36,11 +36,11 @@ pub fn motor(input_xhtml: String, base_dir: &Path) -> Result<String, Box<dyn std
                     tera_pfahne = true;
                 } else {
                     let error: Box<dyn Error> =
-                        "no src attribute is supplied for the tera tag.".into();
+                        "no src attribute is supplied for the toml tag.".into();
                     return Err(error);
                 }
             }
-            Ok(Event::End(e)) if e.local_name().as_ref() == b"tera" => {}
+            Ok(Event::End(e)) if e.local_name().as_ref() == b"toml" => {}
             Ok(Event::Eof) => break,
             Ok(e) => {
                 // Write all other events as-is
@@ -93,7 +93,7 @@ fn process_via_tera(
     Ok(result)
 }
 
-/// Parses attributes from a `<tera />` tag
+/// Parses attributes from a `<toml />` tag
 fn parse_tag_attrs(e: &BytesStart) -> Result<HashMap<String, String>, Box<dyn std::error::Error>> {
     let mut attrs = HashMap::new();
     for attr in e.attributes() {
@@ -120,8 +120,8 @@ mod tests {
     use std::path::Path;
 
     #[test]
-    fn test_no_tera_tag() {
-        let xhtml_input_no_tera = r#"
+    fn test_no_toml_tag() {
+        let xhtml_input = r#"
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -143,7 +143,7 @@ description = "This content comes from TOML!"
         fs::create_dir_all(test_dir).unwrap();
         fs::write(test_dir.join("test_config.toml"), toml_content).unwrap();
 
-        let result_empty = motor(xhtml_input_no_tera.to_string(), test_dir).unwrap();
+        let result_empty = motor(xhtml_input.to_string(), test_dir).unwrap();
 
         assert!(result_empty.contains("<h1>Hello Wolrd!</h1>"));
 
@@ -158,7 +158,7 @@ description = "This content comes from TOML!"
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Test Document</title>
-    <tera src="test_config.toml" name="conf"></tera>
+    <toml src="test_config.toml" name="conf"></toml>
 </head>
 <body>
     <h1>{{ conf.title }}</h1>
@@ -181,7 +181,7 @@ description = "This content comes from TOML!"
 
         assert!(result.contains("<h1>Dynamic Title</h1>"));
         assert!(result.contains("<p>This content comes from TOML!</p>"));
-        assert!(!result.contains("<tera")); // Ensure the <tera /> tag is removed
+        assert!(!result.contains("<toml")); // Ensure the <tera /> tag is removed
 
         // Cleanup
         fs::remove_dir_all(test_dir).unwrap();
