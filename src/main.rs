@@ -4,6 +4,7 @@ mod mdmotor;
 mod motor;
 mod qwen;
 mod schreiben;
+mod teramotor;
 
 use clap::Parser;
 use serde::Deserialize;
@@ -67,10 +68,16 @@ fn main() {
 
     file = std::fs::read_to_string(args.output_path.clone()).expect("err");
 
-    dateien = transform(file, args.template_path).expect("msg");
+    dateien = transform(file, args.template_path.clone()).expect("msg");
 
     fs::write(args.output_path.clone(), &dateien).expect("msg");
 
+    file = std::fs::read_to_string(args.output_path.clone()).expect("err");
+
+    let mut dateien = teramotor::process_via_tera(file, &args.template_path.as_path())
+        .expect("something went wrong");
+
+    fs::write(args.output_path.clone(), &dateien).expect("msg");
     // vorlage(file, args.template_path);
 
     // let toml_str =

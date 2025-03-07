@@ -172,11 +172,18 @@ I'm looking forward to find collaborators who are eager and passionate to bring 
 
 ### Maturity
 
-- current state: MVP
+- quality of source code: MVP
+- quality of documentation: MD-starter
+- stage of product growth: earliest (single-page XHTML Seite Bastler)
 
 ### Dedication
 
 _to my soulamte_. **Valentine Gift 2025**.
+
+### Links
+
+- main git repo: https://git.schloosser.net/veha/veha-rs
+- external git repo: https://github.com/captainhusaynpenguin/veha-rs
 
 ### License
 

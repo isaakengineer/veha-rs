@@ -1,4 +1,5 @@
 use comrak::{markdown_to_html, Options};
+use markdown;
 use quick_xml::events::{BytesEnd, BytesStart, BytesText, Event};
 use quick_xml::reader::Reader;
 use quick_xml::writer::Writer;
@@ -35,7 +36,11 @@ pub fn werte_ersetzen(
                     md_src_pfad = vorlagen_dir.join(md_src);
                     let mut file = std::fs::read_to_string(&md_src_pfad)
                         .expect("The path provieded via CLI could not be read!");
-                    let mut html = markdown_to_html(&file, &Options::default());
+                    // let mut options = Options::default();
+                    // options.extension.footnotes = true;
+                    // let mut html = markdown_to_html(&file, &options);
+                    let mut html = markdown::to_html_with_options(&file, &markdown::Options::gfm())
+                        .unwrap_or("".to_string());
 
                     if let Some(tag) = csvpilot::attributenwert_lesen(e.clone(), "tag") {
                         let mut html_xml_reader = Reader::from_str(&html);
