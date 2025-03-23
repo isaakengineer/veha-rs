@@ -10,10 +10,12 @@ use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
 
 use crate::csvpilot;
+use crate::utils;
 
 pub fn werte_ersetzen(
     eingabe: String,
     vorlagen_dir: std::path::PathBuf,
+    language: Option<&String>,
 ) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     // Schreiber definiert
     let mut output_buffer: Vec<u8> = Vec::new();
@@ -32,8 +34,12 @@ pub fn werte_ersetzen(
                 md_anfang_fahne = true;
                 let mut wert: String;
                 let mut tag: String;
+
                 if let Some(md_src) = csvpilot::attributenwert_lesen(e.clone(), "src") {
                     md_src_pfad = vorlagen_dir.join(md_src);
+                    if utils::attribut_vorhanden(e.clone(), "multilingual") {
+                        md_src_pfad = utils::endung_mit_sprache_erweitern(&md_src_pfad, language);
+                    }
                     let mut file = std::fs::read_to_string(&md_src_pfad)
                         .expect("The path provieded via CLI could not be read!");
                     // let mut options = Options::default();

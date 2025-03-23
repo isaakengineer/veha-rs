@@ -8,6 +8,8 @@ use std::fs;
 use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
 
+use crate::utils;
+
 pub fn attributenwert_lesen(element: BytesStart, attributename: &str) -> Option<String> {
     if let Some(attribute) = element
         .attributes()
@@ -27,6 +29,7 @@ pub fn attributenwert_lesen(element: BytesStart, attributename: &str) -> Option<
 pub fn csv_tag_einfuellen(
     eingabe: String,
     vorlagen_dir: std::path::PathBuf,
+    language: Option<&String>,
 ) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     // Schreiber definiert
     let mut output_buffer: Vec<u8> = Vec::new();
@@ -49,8 +52,13 @@ pub fn csv_tag_einfuellen(
         match xml_reader.read_event() {
             Ok(Event::Start(csv)) if csv.local_name().as_ref() == b"csv" => {
                 csv_anfang_fahne = true; // TODO: check if the flag is already true, there is a mistake here!
-                if let Some(csv_name) = attributenwert_lesen(csv, "src") {
-                    csv_datei_pfad = Some(vorlagen_dir.join(csv_name).with_extension("csv"));
+                if let Some(csv_name) = attributenwert_lesen(csv.clone(), "src") {
+                    let mut csv_datei_pfad_src = vorlagen_dir.join(csv_name).with_extension("csv");
+                    if utils::attribut_vorhanden(csv, "multilingual") {
+                        csv_datei_pfad_src =
+                            utils::endung_mit_sprache_erweitern(&csv_datei_pfad_src, language);
+                    }
+                    csv_datei_pfad = Some(csv_datei_pfad_src);
                 }
             }
             Ok(Event::Start(row)) if row.local_name().as_ref() == b"row" && csv_anfang_fahne => {
