@@ -289,7 +289,7 @@ _to my soulamte_. **Valentine Gift 2025**.
 #### Legal
 
 - Company: [Techne (Gruppe)](https://techne.schloosser.com)
-- Parent: [Schlösser (Gruppe)](https://schlosser.com)
+- Parent: [Schlösser (Gruppe)](https://schloosser.com)
 
 #### Quality
 

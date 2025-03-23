@@ -1,6 +1,6 @@
 [package]
 name = "veha"
-version = "3.0.0"
+version = "3.0.1"
 authors = ["Isaak Engineer <i-engineer@tutamail.com>"]
 license = "AGPL-3.0-only"
 description = "Opinionanted static website generator: a CLI programm [written in Rust] to automate merging modular written data into a component based XHTML web-page"
