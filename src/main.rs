@@ -10,10 +10,12 @@ mod utils;
 use clap::builder::{PossibleValuesParser, TypedValueParser};
 use clap::{self, builder::PossibleValue};
 use clap::{value_parser, Arg};
+use csv;
 use log::{debug, error, info, warn};
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::fs;
+use std::fs::File;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use toml;
@@ -59,57 +61,30 @@ fn extend_extension_with_language(path: &PathBuf, language: Option<&String>) -> 
     new_path
 }
 
-fn main() {
-    env_logger::init();
+fn read_map(file_path: PathBuf) -> Result<Vec<(String, String)>, Box<dyn std::error::Error>> {
+    let file = File::open(file_path)?;
+    let mut rdr = csv::ReaderBuilder::new()
+        .has_headers(true) // Skip the header
+        .comment(Some(b'#')) // Ignore lines starting with '#'
+        .from_reader(file);
 
-    //  let beispiel = beispiel_person();
-    //  println!("{:}", String::from_utf8(beispiel).unwrap());
-
-    // probe();
-
-    // let args = Cli::parse();
-    // println!("path: {:?}", input_path);
-
-    let matches = clap::Command::new("leva")
-        .arg(Arg::new("input").required(true).index(1).help("Input path"))
-        .arg(
-            Arg::new("template")
-                .required(true)
-                .index(2)
-                .help("Template path"),
-        )
-        .arg(
-            Arg::new("output")
-                .required(true)
-                .index(3)
-                .help("Output path"),
-        )
-        .arg(
-            Arg::new("language")
-                .help("The language code for the content and webpage")
-                .short('l')
-                .long("language")
-                .value_parser(clap::builder::PossibleValuesParser::new(&[
-                    "de", "en", "fr",
-                ])),
-        )
-        .get_matches();
-
-    let input_path = Path::new(matches.get_one::<String>("input").unwrap()).to_path_buf();
-    let template_path = Path::new(matches.get_one::<String>("template").unwrap()).to_path_buf();
-    let mut output_path = Path::new(matches.get_one::<String>("output").unwrap()).to_path_buf();
-    let language = matches.get_one::<String>("language");
-
-    output_path = extend_extension_with_language(&output_path, language);
-    // Use the arguments in your code
-    if let Some(lang) = language {
-        info!("Language: {}", lang);
+    let mut data = Vec::new();
+    for result in rdr.records() {
+        let record = result?;
+        if record.len() == 2 {
+            data.push((record[0].to_string(), record[1].to_string()));
+        }
     }
-    info!("No language code provided, default will be used.");
+    Ok(data)
+}
 
-    // println!("Input Path: {}", input_path);
-    // println!("Template Path: {}", template_path);
-    // println!("Output Path: {}", output_path);
+fn process_page(
+    template_path: PathBuf,
+    input_path: PathBuf,
+    output_path: PathBuf,
+    language: Option<&String>,
+) {
+    let output_path = extend_extension_with_language(&output_path, language);
 
     let mut file = std::fs::read_to_string(&input_path)
         .expect("The path provieded via CLI could not be read!");
@@ -140,6 +115,119 @@ fn main() {
         tomlmotor::motor(file, &template_path.as_path(), language).expect("something went wrong");
 
     fs::write(output_path.clone(), &dateien).expect("msg");
+}
+
+fn process_site(template_path: PathBuf, map_path: PathBuf, language: Option<&String>) {
+    let data = read_map(map_path).unwrap();
+    for row in data {
+        let input_path = Path::new(&row.0).to_path_buf();
+        let output_path = Path::new(&row.1).to_path_buf();
+        process_page(template_path.clone(), input_path, output_path, language);
+    }
+}
+
+fn main() {
+    env_logger::init();
+
+    //  let beispiel = beispiel_person();
+    //  println!("{:}", String::from_utf8(beispiel).unwrap());
+
+    // probe();
+
+    // let args = Cli::parse();
+    // println!("path: {:?}", input_path);
+
+    let matches = clap::Command::new("leva")
+        .subcommand(
+            clap::Command::new("page")
+                .arg(
+                    Arg::new("template")
+                        .required(true)
+                        .index(1)
+                        .help("Template path"),
+                )
+                .arg(Arg::new("input").required(true).index(2).help("Input path"))
+                .arg(
+                    Arg::new("output")
+                        .required(true)
+                        .index(3)
+                        .help("Output path"),
+                )
+                .arg(
+                    Arg::new("language")
+                        .help("The language code for the content and webpage")
+                        .short('l')
+                        .long("language")
+                        .value_parser(clap::builder::PossibleValuesParser::new(&[
+                            "de", "en", "fr",
+                        ])),
+                ),
+        )
+        .subcommand(
+            clap::Command::new("site")
+                .arg(
+                    Arg::new("template")
+                        .required(true)
+                        .index(1)
+                        .help("Template path"),
+                )
+                .arg(Arg::new("map").required(true).index(2).help("Input path"))
+                .arg(
+                    Arg::new("language")
+                        .help("The language code for the content and webpage")
+                        .short('l')
+                        .long("language")
+                        .value_parser(clap::builder::PossibleValuesParser::new(&[
+                            "de", "en", "fr",
+                        ])),
+                ),
+        )
+        .get_matches();
+
+    match matches.subcommand() {
+        Some(("page", sub_m)) => {
+            let input_path = Path::new(sub_m.get_one::<String>("input").unwrap()).to_path_buf();
+            let template_path =
+                Path::new(sub_m.get_one::<String>("template").unwrap()).to_path_buf();
+            let mut output_path =
+                Path::new(sub_m.get_one::<String>("output").unwrap()).to_path_buf();
+            let language = sub_m.get_one::<String>("language");
+
+            // Use the arguments in your code
+            if let Some(lang) = language {
+                info!("Language: {}", lang);
+            } else {
+                info!("No language code provided, default will be used.");
+            }
+
+            // Process the "page" subcommand with the provided arguments
+            process_page(template_path, input_path, output_path, language);
+        }
+        Some(("site", sub_m)) => {
+            let template_path =
+                Path::new(sub_m.get_one::<String>("template").unwrap()).to_path_buf();
+            let map_path = Path::new(sub_m.get_one::<String>("map").unwrap()).to_path_buf();
+            let language = sub_m.get_one::<String>("language");
+
+            // Use the arguments in your code
+            if let Some(lang) = language {
+                info!("Language: {}", lang);
+            } else {
+                info!("No language code provided, default will be used.");
+            }
+
+            // Process the "site" subcommand with the provided arguments
+            process_site(template_path, map_path, language);
+        }
+        _ => {
+            eprintln!("No valid subcommand was provided.");
+        }
+    }
+
+    // println!("Input Path: {}", input_path);
+    // println!("Template Path: {}", template_path);
+    // println!("Output Path: {}", output_path);
+
     // vorlage(file, template_path);
 
     // let toml_str =

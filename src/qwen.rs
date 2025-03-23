@@ -24,7 +24,7 @@ pub fn transform(
     // match event? {
     loop {
         match xml_reader.read_event() {
-            Ok(Event::Start(vorlage)) if vorlage.local_name().as_ref() == b"vorlage" => {
+            Ok(Event::Start(vorlage)) if vorlage.local_name().as_ref() == b"template" => {
                 // Extract the value of the 'name' attribute
                 if let Some(name_attr) = vorlage
                     .attributes()
