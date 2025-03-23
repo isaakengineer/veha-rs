@@ -266,7 +266,10 @@ They will be repeated for each row of the CSV file.
 
 ### Quick-and-Dirty
 
-For a quick example of what this tool is capable of, please look in the [beispiel](./beispiel/) directory of this repository.
+For a quick example of what this tool is capable of, please look in the [beispiel](./beispiel/) directory of this repository:
+
+- [Github](https://github.com/isaakengineer/veha-rs/tree/master/beispiel)
+- [Intern](https://git.schloosser.net/veha/veha-rs/src/branch/master/beispiel)
 
 ### Production-grade examples
 

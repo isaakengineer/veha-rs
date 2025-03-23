@@ -22,11 +22,11 @@ veha page ./ ./structure/index.xhtml ./public/index.xhtml -l en
 Donwload this folder and run the following command in it to generate the `index.xhtml` file in the `public` folder. [the default language is German].
 
 ```
-veha page ./ ./map.csv
+veha site ./ ./map.csv
 ```
 
 In order to generate the English version of the page, run the following command.
 
 ```
-veha page ./ ./map.csv -l en
+veha site ./ ./map.csv -l en
 ```
