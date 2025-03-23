@@ -306,6 +306,16 @@ _to my soulamte_. **Valentine Gift 2025**.
 - main git repo: [Schlösser Frogejo](https://git.schloosser.net/veha/veha-rs)
 - external git repo: [Github](https://github.com/isaakengineer/veha-rs)
 
+### A.I. usage
+
+The effort to translating _veha standards_ into a server side rendering enginge started alongside the time I was trying to experiment with A.I.
+
+- the earlist attempts were prompts via [Qwen](https://qwen.ai/)
+- later [DeepSeek](https://deepseek.com) chatbot was used to for starting input regarding areas I am not proficient in Rust
+- finally the [GitHub Copilot](https://github.com/features/copilot) as a chat prompt to increase the efficiency of writing in Rust
+
+The main credit for starting this project goes to Qwen, also because they released a coding assistant open-source which could be run locally, which ran with acceptable speed in previous gen CPU and integrated GPU!
+
 ### License
 
 Copyright (C) 2025 Hossein Rezaei (pen name: Isaak Engineer)
