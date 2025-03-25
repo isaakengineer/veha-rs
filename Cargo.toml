@@ -1,6 +1,6 @@
 [package]
 name = "veha"
-version = "3.1.0"
+version = "3.1.1"
 authors = ["Isaak Engineer <i-engineer@tutamail.com>"]
 license = "AGPL-3.0-only"
 description = "an open source utility that automates merging of written raw content and xml structures into web pages."
