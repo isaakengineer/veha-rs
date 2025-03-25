@@ -1,6 +1,8 @@
 # veha (rs)
 
-**veha-rs** is a command line application in Rust, that automatees merging of written content and web page structure;
+**veha-rs** is an open source utility that automates merging of written content and structures into web pages.
+
+You can think of **veha-rs** as LaTex for content rich web pages, or as an incremental evolution to _PHP_, combined with _component-based_ approaches in _modern HTML_.
 
 ## Features
 

@@ -86,8 +86,13 @@ fn process_page(
 ) {
     let output_path = extend_extension_with_language(&output_path, language);
 
-    let mut file = std::fs::read_to_string(&input_path)
-        .expect("The path provieded via CLI could not be read!");
+    let mut file = match std::fs::read_to_string(&input_path) {
+        Ok(content) => content,
+        Err(error) => {
+            log::error!("Failed to read file at path: {:?}", input_path);
+            panic!("The path provided via CLI could not be read!");
+        }
+    };
 
     // let mut dateien = werte_ersetzen(file).expect("etwas schiefgelaufen");
     // let mut dateien = csv_tag_einfuellen(file, template_path).expect("error!");
@@ -120,8 +125,10 @@ fn process_page(
 fn process_site(template_path: PathBuf, map_path: PathBuf, language: Option<&String>) {
     let data = read_map(map_path).unwrap();
     for row in data {
-        let input_path = Path::new(&row.0).to_path_buf();
-        let output_path = Path::new(&row.1).to_path_buf();
+        // let input_path = Path::new(&row.0).to_path_buf();
+        let input_path = template_path.join(&row.0);
+        // let output_path = Path::new(&row.1).to_path_buf();
+        let output_path = template_path.join(&row.1);
         process_page(template_path.clone(), input_path, output_path, language);
     }
 }

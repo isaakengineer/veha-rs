@@ -1,4 +1,5 @@
 use csv;
+use log::{debug, error, info, warn};
 use quick_xml::events::{BytesEnd, BytesStart, BytesText, Event};
 use quick_xml::reader::Reader;
 use quick_xml::writer::Writer;
@@ -44,6 +45,7 @@ pub fn csv_tag_einfuellen(
     let mut csv_pfad: std::path::PathBuf;
 
     let mut csv_datei_pfad: Option<std::path::PathBuf> = None;
+    let mut csv_datei_pfad_src;
     let mut xml_row_pfad: std::path::PathBuf;
 
     let mut schrift: Vec<u8> = Vec::new();
@@ -53,12 +55,14 @@ pub fn csv_tag_einfuellen(
             Ok(Event::Start(csv)) if csv.local_name().as_ref() == b"csv" => {
                 csv_anfang_fahne = true; // TODO: check if the flag is already true, there is a mistake here!
                 if let Some(csv_name) = attributenwert_lesen(csv.clone(), "src") {
-                    let mut csv_datei_pfad_src = vorlagen_dir.join(csv_name).with_extension("csv");
+                    // csv_datei_pfad_src.join(csv_name).with_extension("csv");
+                    csv_datei_pfad_src = vorlagen_dir.join(csv_name);
                     if utils::attribut_vorhanden(csv, "multilingual") {
                         csv_datei_pfad_src =
                             utils::endung_mit_sprache_erweitern(&csv_datei_pfad_src, language);
                     }
                     csv_datei_pfad = Some(csv_datei_pfad_src);
+                    println!("1. csv file {:?}", &csv_datei_pfad);
                 }
             }
             Ok(Event::Start(row)) if row.local_name().as_ref() == b"row" && csv_anfang_fahne => {
@@ -66,6 +70,7 @@ pub fn csv_tag_einfuellen(
                     if let Some(tag) = attributenwert_lesen(row.clone(), "tag") {
                         let mut notiz;
                         xml_row_pfad = vorlagen_dir.join(row_pfad);
+                        println!("2. csv file {:?}", &csv_datei_pfad);
                         if let Some(csv_pfad) = csv_datei_pfad.clone() {
                             notiz = reihe_einfuellen(xml_row_pfad, csv_pfad)
                                 .expect("Reihen konnte nicht eingefüllt werden!");
@@ -126,6 +131,8 @@ pub fn reihe_einfuellen(
     xml_pfad: std::path::PathBuf,
     csv_pfad: std::path::PathBuf,
 ) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    println!("replacing line from {:?} to {:?}", &xml_pfad, &csv_pfad);
+
     let mut res: Vec<u8> = Vec::new();
     let file = std::fs::File::open(csv_pfad)?;
     let mut rdr = csv::Reader::from_reader(&file);
