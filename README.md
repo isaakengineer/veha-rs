@@ -275,7 +275,10 @@ For a quick example of what this tool is capable of, please look in the [beispie
 
 ### Production-grade examples
 
-TO BE ADDED
+- Template for a resume website:
+  - [template repository](https://git.schloosser.net/lebenslaeufe/webseite-vorlage)
+  - [content repository](https://git.schloosser.net/lebenslaeufe/webseite-se.git)
+  - [webseite](https://h.schloosser.org)
 
 ## Contributing
 
