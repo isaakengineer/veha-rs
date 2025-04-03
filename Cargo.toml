@@ -7,7 +7,7 @@ description = "an open source utility that automates merging of written raw cont
 readme = "README.md"
 homepage = "https://veha.techne.schloosser.com"
 repository = "https://git.schloosser.net/veha/veha-rs"
-keywords = ["xhtml", "ssg", "utility", "engine", "template"]
+keywords = ["utility", "xhtml", "ssr", "ssg", "engine", "template-engine"]
 categories = ["command-line-utilities"]
 
 edition = "2021"

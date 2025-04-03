@@ -286,6 +286,16 @@ Contributions are welcome! If you have any suggestions, bug reports, or feature 
 
 I'm looking forward to find collaborators who are eager and passionate to bring this idea into a full-fledged web framework ...
 
+### Future steps
+
+#### Short-term
+
+Alternative motors:
+
+- alternative to [tera]() [tinytemplate](https://docs.rs/tinytemplate/latest/tinytemplate/index.html)
+- alternative to current markdown engine
+- alternative to [quick-xml]
+
 ## Declarations
 
 ### Dedication
