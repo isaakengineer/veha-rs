@@ -110,8 +110,8 @@ fn process_page(
 
     file = std::fs::read_to_string(output_path.clone()).expect("err");
 
-    let mut dateien =
-        motor::toml::motor(file, &template_path.as_path(), language).expect("something went wrong");
+    let mut dateien = motor::toml::transform(file, &template_path.as_path(), language)
+        .expect("something went wrong");
 
     fs::write(output_path.clone(), &dateien).expect("msg");
 }

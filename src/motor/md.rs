@@ -9,7 +9,7 @@ use std::fs;
 use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
 
-use crate::csvpilot;
+use crate::motor::csv;
 use crate::utils;
 
 pub fn werte_ersetzen(
@@ -35,7 +35,7 @@ pub fn werte_ersetzen(
                 let mut wert: String;
                 let mut tag: String;
 
-                if let Some(md_src) = csvpilot::attributenwert_lesen(e.clone(), "src") {
+                if let Some(md_src) = csv::attributenwert_lesen(e.clone(), "src") {
                     md_src_pfad = vorlagen_dir.join(md_src);
                     if utils::attribut_vorhanden(e.clone(), "multilingual") {
                         md_src_pfad = utils::endung_mit_sprache_erweitern(&md_src_pfad, language);
@@ -48,7 +48,7 @@ pub fn werte_ersetzen(
                     let mut html = markdown::to_html_with_options(&file, &markdown::Options::gfm())
                         .unwrap_or("".to_string());
 
-                    if let Some(tag) = csvpilot::attributenwert_lesen(e.clone(), "tag") {
+                    if let Some(tag) = csv::attributenwert_lesen(e.clone(), "tag") {
                         let mut html_xml_reader = Reader::from_str(&html);
 
                         let mut elem_start = BytesStart::new(tag.clone());

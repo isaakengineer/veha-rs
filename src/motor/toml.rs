@@ -14,7 +14,7 @@ use toml::Value;
 use crate::utils;
 
 /// Processes an XHTML file with `<tera />` tags
-pub fn motor(
+pub fn transform(
     input_xhtml: String,
     base_dir: &Path,
     language: Option<&String>,
@@ -158,7 +158,7 @@ description = "This content comes from TOML!"
         fs::create_dir_all(test_dir).unwrap();
         fs::write(test_dir.join("test_config.toml"), toml_content).unwrap();
 
-        let result_empty = motor(xhtml_input.to_string(), test_dir).unwrap();
+        let result_empty = transform(xhtml_input.to_string(), test_dir, None).unwrap();
 
         assert!(result_empty.contains("<h1>Hello Wolrd!</h1>"));
 
@@ -192,7 +192,7 @@ description = "This content comes from TOML!"
         fs::create_dir_all(test_dir).unwrap();
         fs::write(test_dir.join("test_config.toml"), toml_content).unwrap();
 
-        let result = motor(xhtml_input.to_string(), test_dir).unwrap();
+        let result = transform(xhtml_input.to_string(), test_dir, None).unwrap();
 
         assert!(result.contains("<h1>Dynamic Title</h1>"));
         assert!(result.contains("<p>This content comes from TOML!</p>"));
