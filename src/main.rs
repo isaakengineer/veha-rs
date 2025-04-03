@@ -1,10 +1,10 @@
-mod beide;
-mod csvpilot;
-mod mdmotor;
-mod motor;
-mod qwen;
-mod schreiben;
-mod tomlmotor;
+mod motor {
+    pub mod csv;
+    pub mod md;
+    pub mod toml;
+    pub mod xml;
+}
+
 mod utils;
 
 use clap::builder::{PossibleValuesParser, TypedValueParser};
@@ -19,12 +19,6 @@ use std::fs::File;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 use toml;
-
-use beide::probe;
-use csvpilot::{csv_tag_einfuellen, reihe_einfuellen, werte_ersetzen};
-use motor::vorlage;
-use qwen::transform;
-use schreiben::beispiel_person;
 
 // #[derive(Parser)]
 // struct Cli {
@@ -94,30 +88,30 @@ fn process_page(
         }
     };
 
-    // let mut dateien = werte_ersetzen(file).expect("etwas schiefgelaufen");
-    // let mut dateien = csv_tag_einfuellen(file, template_path).expect("error!");
-    let mut dateien = mdmotor::werte_ersetzen(file, template_path.clone(), language)
+    // let mut dateien = motor::csv::werte_ersetzen(file).expect("etwas schiefgelaufen");
+    // let mut dateien = motor::csv::csv_tag_einfuellen(file, template_path).expect("error!");
+    let mut dateien = motor::md::werte_ersetzen(file, template_path.clone(), language)
         .expect("something went wrong");
 
     fs::write(output_path.clone(), &dateien).expect("msg");
 
     file = std::fs::read_to_string(output_path.clone()).expect("err");
 
-    let mut dateien =
-        csv_tag_einfuellen(file, template_path.clone(), language).expect("something went wrong");
+    let mut dateien = motor::csv::csv_tag_einfuellen(file, template_path.clone(), language)
+        .expect("something went wrong");
 
     fs::write(output_path.clone(), &dateien).expect("msg");
 
     file = std::fs::read_to_string(output_path.clone()).expect("err");
 
-    dateien = transform(file, template_path.clone()).expect("msg");
+    dateien = motor::xml::transform(file, template_path.clone()).expect("msg");
 
     fs::write(output_path.clone(), &dateien).expect("msg");
 
     file = std::fs::read_to_string(output_path.clone()).expect("err");
 
     let mut dateien =
-        tomlmotor::motor(file, &template_path.as_path(), language).expect("something went wrong");
+        motor::toml::motor(file, &template_path.as_path(), language).expect("something went wrong");
 
     fs::write(output_path.clone(), &dateien).expect("msg");
 }
@@ -135,11 +129,6 @@ fn process_site(template_path: PathBuf, map_path: PathBuf, language: Option<&Str
 
 fn main() {
     env_logger::init();
-
-    //  let beispiel = beispiel_person();
-    //  println!("{:}", String::from_utf8(beispiel).unwrap());
-
-    // probe();
 
     // let args = Cli::parse();
     // println!("path: {:?}", input_path);
@@ -235,7 +224,7 @@ fn main() {
     // println!("Template Path: {}", template_path);
     // println!("Output Path: {}", output_path);
 
-    // vorlage(file, template_path);
+    // xml::vorlage(file, template_path);
 
     // let toml_str =
     //     fs::read_to_string("beispiel/konfig.toml").expect("Failed to read Cargo.toml file");
@@ -245,5 +234,5 @@ fn main() {
 
     // println!("{:#?}", cargo_toml);
 
-    // transform();
+    // motor::xml::transform();
 }
