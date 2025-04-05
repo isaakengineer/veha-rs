@@ -21,10 +21,13 @@ fn get_table_schema(conn: &Connection, table_name: &str) -> Result<Vec<(String, 
     Ok(schema)
 }
 
-fn query_to_json(conn: &Connection, table_name: &str) -> Result<Vec<Map<String, Value>>> {
+fn query_to_json(
+    conn: &Connection,
+    query: String,
+    table_name: &str,
+) -> Result<Vec<Map<String, Value>>> {
     let schema = get_table_schema(conn, table_name)?;
     let columns: Vec<String> = schema.iter().map(|(name, _)| name.clone()).collect();
-    let query = format!("SELECT * FROM {}", table_name);
 
     let mut stmt = conn.prepare(&query)?;
     let rows = stmt.query_map([], |row| {
@@ -55,9 +58,13 @@ fn query_to_json(conn: &Connection, table_name: &str) -> Result<Vec<Map<String, 
     Ok(result)
 }
 
-fn process(sqlite_src: String, table_name: String) -> Result<String, Box<dyn std::error::Error>> {
+fn process(
+    sqlite_src: String,
+    query: String,
+    table_name: String,
+) -> Result<String, Box<dyn std::error::Error>> {
     let conn = Connection::open(sqlite_src)?;
-    let json_data = query_to_json(&conn, table_name.as_str())?;
+    let json_data = query_to_json(&conn, query, table_name.as_str())?;
     let json_str = serde_json::to_string_pretty(&json_data)?;
     Ok(json_str)
 }
@@ -107,7 +114,7 @@ pub fn lesen(
 
     if fahne_sqlanfang && fahne_sqlende {
         info!("Content of <sqlite> tag: {}", sqlite_content);
-        let json_str = process(sqlite_src, sqlite_table).unwrap();
+        let json_str = process(sqlite_src, sqlite_content, sqlite_table).unwrap();
         std::fs::write("output.json", json_str)?; // TODO: move it
     } else {
         warn!("No <sqlite> tag found or it is not properly closed.");
