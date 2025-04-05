@@ -1,2 +1,2 @@
 input,output
-./structure/index.xhtml,./public/index.xhtml
+./structure/json.xhtml,./public/post/+{id}.json

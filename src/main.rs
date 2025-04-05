@@ -1,8 +1,16 @@
 mod motor {
     pub mod csv;
     pub mod md;
+    pub mod sqlite;
     pub mod toml;
     pub mod xml;
+}
+
+mod processor {
+    pub mod collection;
+    pub mod page;
+    pub mod preprocess;
+    pub mod site;
 }
 
 mod utils;
@@ -39,92 +47,6 @@ struct Vorlage {
     name: String,
     #[allow(dead_code)]
     path: String,
-}
-
-fn extend_extension_with_language(path: &PathBuf, language: Option<&String>) -> PathBuf {
-    let mut new_path = path.clone();
-    if let Some(lang) = language {
-        if let Some(extension) = path.extension() {
-            let mut new_extension = std::ffi::OsString::new();
-            new_extension.push(lang);
-            new_extension.push(".");
-            new_extension.push(extension);
-            new_path.set_extension(new_extension);
-        }
-    }
-    new_path
-}
-
-fn read_map(file_path: PathBuf) -> Result<Vec<(String, String)>, Box<dyn std::error::Error>> {
-    let file = File::open(file_path)?;
-    let mut rdr = csv::ReaderBuilder::new()
-        .has_headers(true) // Skip the header
-        .comment(Some(b'#')) // Ignore lines starting with '#'
-        .from_reader(file);
-
-    let mut data = Vec::new();
-    for result in rdr.records() {
-        let record = result?;
-        if record.len() == 2 {
-            data.push((record[0].to_string(), record[1].to_string()));
-        }
-    }
-    Ok(data)
-}
-
-fn process_page(
-    template_path: PathBuf,
-    input_path: PathBuf,
-    output_path: PathBuf,
-    language: Option<&String>,
-) {
-    let output_path = extend_extension_with_language(&output_path, language);
-
-    let mut file = match std::fs::read_to_string(&input_path) {
-        Ok(content) => content,
-        Err(error) => {
-            log::error!("Failed to read file at path: {:?}", input_path);
-            panic!("The path provided via CLI could not be read!");
-        }
-    };
-
-    // let mut dateien = motor::csv::werte_ersetzen(file).expect("etwas schiefgelaufen");
-    // let mut dateien = motor::csv::csv_tag_einfuellen(file, template_path).expect("error!");
-    let mut dateien = motor::md::werte_ersetzen(file, template_path.clone(), language)
-        .expect("something went wrong");
-
-    fs::write(output_path.clone(), &dateien).expect("msg");
-
-    file = std::fs::read_to_string(output_path.clone()).expect("err");
-
-    let mut dateien = motor::csv::csv_tag_einfuellen(file, template_path.clone(), language)
-        .expect("something went wrong");
-
-    fs::write(output_path.clone(), &dateien).expect("msg");
-
-    file = std::fs::read_to_string(output_path.clone()).expect("err");
-
-    dateien = motor::xml::transform(file, template_path.clone()).expect("msg");
-
-    fs::write(output_path.clone(), &dateien).expect("msg");
-
-    file = std::fs::read_to_string(output_path.clone()).expect("err");
-
-    let mut dateien = motor::toml::transform(file, &template_path.as_path(), language)
-        .expect("something went wrong");
-
-    fs::write(output_path.clone(), &dateien).expect("msg");
-}
-
-fn process_site(template_path: PathBuf, map_path: PathBuf, language: Option<&String>) {
-    let data = read_map(map_path).unwrap();
-    for row in data {
-        // let input_path = Path::new(&row.0).to_path_buf();
-        let input_path = template_path.join(&row.0);
-        // let output_path = Path::new(&row.1).to_path_buf();
-        let output_path = template_path.join(&row.1);
-        process_page(template_path.clone(), input_path, output_path, language);
-    }
 }
 
 fn main() {
@@ -197,7 +119,7 @@ fn main() {
             }
 
             // Process the "page" subcommand with the provided arguments
-            process_page(template_path, input_path, output_path, language);
+            processor::page::process(template_path, input_path, output_path, language);
         }
         Some(("site", sub_m)) => {
             let template_path =
@@ -213,7 +135,7 @@ fn main() {
             }
 
             // Process the "site" subcommand with the provided arguments
-            process_site(template_path, map_path, language);
+            processor::site::process(template_path, map_path, language);
         }
         _ => {
             eprintln!("No valid subcommand was provided.");
