@@ -1,18 +1,18 @@
 [
   {
-    "author": "Isaak",
-    "date": "2025-04-05",
-    "description": "",
-    "id": 1,
     "title": "My first post",
-    "type": "post"
+    "author": "Isaak",
+    "id": "1",
+    "type": "post",
+    "date": "2025-04-05",
+    "description": ""
   },
   {
-    "author": "Isaak",
-    "date": "2025-04-04",
-    "description": "Here should be more content",
-    "id": 2,
+    "type": "post",
     "title": "The second post",
-    "type": "post"
+    "id": "2",
+    "description": "Here should be more content",
+    "author": "Isaak",
+    "date": "2025-04-04"
   }
 ]
