@@ -7,8 +7,6 @@ use rusqlite::{Connection, Result, Row};
 use serde::Serialize;
 use serde_json::{Map, Value};
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::Write;
 
 use crate::utils;
 
@@ -83,16 +81,6 @@ fn query_to_map(
     Ok(result)
 }
 
-fn write_hashmap_to_file(
-    map: &Vec<HashMap<String, String>>,
-    file_path: &str,
-) -> std::io::Result<()> {
-    let json = serde_json::to_string_pretty(map).expect("Failed to serialize HashMap");
-    let mut file = File::create(file_path)?;
-    file.write_all(json.as_bytes())?;
-    Ok(())
-}
-
 fn process(
     sqlite_src: String,
     query: String,
@@ -104,15 +92,16 @@ fn process(
     Ok(map_data)
 }
 
-pub fn lesen(
-    eingabe: String,
+pub fn gen_map(
+    eingabe: Vec<u8>,
     vorlagen_dir: std::path::PathBuf,
     language: Option<&String>,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<Vec<HashMap<String, String>>, Box<dyn std::error::Error>> {
     let mut ausgabepuffer: Vec<u8> = Vec::new();
     let mut xmlschreiber = Writer::new(&mut ausgabepuffer);
 
-    let mut xmlleser = Reader::from_str(&eingabe);
+    let eingabe_str = std::str::from_utf8(&eingabe)?;
+    let mut xmlleser = Reader::from_str(eingabe_str);
 
     let mut fahne_sqlanfang = false;
     let mut fahne_sqlende = false;
@@ -154,12 +143,11 @@ pub fn lesen(
     if fahne_backend && fahne_sqlanfang && fahne_sqlende {
         info!("Content of <sqlite> tag: {}", sqlite_content);
         let map = process(sqlite_src, sqlite_content, sqlite_table).unwrap();
-        write_hashmap_to_file(&map, "./output.json"); // TODO: move it
+        Ok(map)
     } else {
         warn!("No <sqlite> tag found or it is not properly closed.");
+        return Err("No <sqlite> tag found or it is not properly closed.".into());
     }
-
-    Ok(())
 }
 
 pub fn transform() {}

@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 
-use crate::{motor, processor};
+use crate::{machine, motor, processor};
 
 fn read_map(file_path: PathBuf) -> Result<Vec<(String, String)>, Box<dyn std::error::Error>> {
     let file = File::open(file_path)?;
@@ -29,25 +29,11 @@ pub fn process(template_path: PathBuf, map_path: PathBuf, language: Option<&Stri
         let input_path = template_path.join(&row.0);
         // let output_path = Path::new(&row.1).to_path_buf();
         let output_path = template_path.join(&row.1);
-
-        match processor::preprocess::collection_name(output_path.clone()) {
-            Some(name) => {
-                let mut file = match std::fs::read_to_string(&input_path) {
-                    Ok(content) => content,
-                    Err(error) => {
-                        log::error!("Failed to read file at path: {:?}", input_path);
-                        panic!("The path provided via CLI could not be read!");
-                    }
-                };
-                log::info!("Collection detected. Preprocessor activated.");
-                motor::sqlite::lesen(file, template_path.clone(), language);
-            }
-            None => {
-                processor::page::process(template_path.clone(), input_path, output_path, language);
-            } // let collection = processor::collection::gen_context();
-              // for context in collection {
-              //     process::collection::gen_item()
-              // }
-        }
+        machine::binder::binden(
+            template_path.clone(),
+            input_path.clone(),
+            output_path.clone(),
+            language,
+        );
     }
 }

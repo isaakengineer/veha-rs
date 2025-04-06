@@ -9,8 +9,12 @@ mod motor {
 mod processor {
     pub mod collection;
     pub mod page;
-    pub mod preprocess;
     pub mod site;
+}
+
+mod machine {
+    pub mod binder;
+    pub mod press;
 }
 
 mod utils;
