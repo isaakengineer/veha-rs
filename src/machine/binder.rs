@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::fs;
-use std::fs::File;
+use std::fs::{create_dir_all, File};
 use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -11,7 +11,26 @@ const EXPANSION_SIGN: char = '+';
 const COLLECTION_SIGN_START: char = '{';
 const COLLECTION_SIGN_END: char = '}';
 
-fn write_hashmap_to_file(
+fn ausgabepfadersteller(path: PathBuf, params: HashMap<String, String>) -> PathBuf {
+    let path_str = path.to_string_lossy().to_string();
+    let mut result = path_str.clone();
+
+    for (key, value) in params {
+        let placeholder = format!("+{{{}}}", key);
+        result = result.replace(&placeholder, &value);
+    }
+
+    PathBuf::from(result)
+}
+
+fn write_hashmap_to_file(map: &HashMap<String, String>, file_path: PathBuf) -> std::io::Result<()> {
+    let json = serde_json::to_string_pretty(map).expect("Failed to serialize HashMap");
+    let mut file = File::create(file_path)?;
+    file.write_all(json.as_bytes())?;
+    Ok(())
+}
+
+fn write_vechashmap_to_file(
     map: &Vec<HashMap<String, String>>,
     file_path: &str,
 ) -> std::io::Result<()> {
@@ -41,9 +60,43 @@ pub fn binden(
                     )
                     .unwrap();
                     log::info!("Collection detected. Preprocessor activated.");
+                    // log::info!(
+                    //     "Eingabedatei ist: {:?}, {:?}",
+                    //     std::str::from_utf8(&eingabedatei.0.clone()),
+                    //     std::str::from_utf8(&eingabedatei.0.clone()),
+                    // );
                     map = motor::sqlite::gen_map(eingabedatei.0, template_path.clone(), language)
                         .unwrap();
-                    write_hashmap_to_file(&map, "./output.json"); // TODO: move it
+                    for row in map {
+                        let ausgabepfad_einzeln =
+                            ausgabepfadersteller(ausgabepfad.clone(), row.clone());
+                        // JSON test
+                        // write_hashmap_to_file(&row, ausgabepfad_einzeln);
+
+                        // log::info!(
+                        //     "erstellen Augabe-Vector mit {:?},{:?},{:?}",
+                        //     eingabedatei.1.clone(),
+                        //     row.clone(),
+                        //     b"w"
+                        // );
+                        let mut ausgabe_vec = machine::press::hashmap_drucken(
+                            eingabedatei.1.clone(),
+                            row.clone(),
+                            b"w",
+                        )
+                        .unwrap();
+                        if let Some(parent) = ausgabepfad_einzeln.parent() {
+                            create_dir_all(parent).unwrap();
+                        }
+                        let mut file = File::create(ausgabepfad_einzeln.clone()).unwrap();
+                        file.write_all(&ausgabe_vec).unwrap();
+                        processor::page::process(
+                            template_path.clone(),
+                            ausgabepfad_einzeln.clone(),
+                            ausgabepfad_einzeln.clone(),
+                            language,
+                        );
+                    }
                 }
                 Err(error) => {
                     log::error!("Failed to read file at path: {:?}", eingabepfad);

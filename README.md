@@ -45,9 +45,10 @@ Supported data formats:
 - TOML
 - CSV (comma separated values)
 - MD (markdown)
+- SQLite
 - XHTML [though, only as a wrapper template]
 
-Future support planned: SQLite, LaTex, etc [to suggest a new input format open an issue or contact the author via email please].
+Future support planned: all open source SQL platforms [such as MySQL, Maria SQL, etc], LaTex, etc [to suggest a new input format open an issue or contact the author via email please].
 
 ### Non-technical
 
