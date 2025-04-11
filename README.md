@@ -297,20 +297,13 @@ Alternative motors:
 - alternative to current markdown engine
 - alternative to [quick-xml]
 
-## Declarations
+## Imprint
 
 ### Dedication
 
-_to my soulamte_. **Valentine Gift 2025**.
+**For my soulmate without whose love I could not afford my volunteer work!**
 
-### Status
-
-#### Legal
-
-- Company: [Techne (Gruppe)](https://techne.schloosser.com)
-- Parent: [Schlösser (Gruppe)](https://schloosser.com)
-
-#### Quality
+### Quality
 
 - quality of source code: MVP-1
 - quality of documentation: MD-starter
@@ -318,11 +311,20 @@ _to my soulamte_. **Valentine Gift 2025**.
 
 ### Links
 
+#### Companies
+
+- Developer Group: **[Techne](https://techne.schloosser.com)**
+- Dveloper group's parent organisation: **[Schlösser](https://schloosser.com)**
+
+#### Source-Code
+
 - [website](https://veha.techne.schloosser.com)
 - main git repo: [Schlösser Frogejo](https://git.schloosser.net/veha/veha-rs)
 - external git repo: [Github](https://github.com/isaakengineer/veha-rs)
 
-### A.I. usage
+### Declarations
+
+#### A.I. Usage
 
 The effort to translating _veha standards_ into a server side rendering enginge started alongside the time I was trying to experiment with A.I.
 
