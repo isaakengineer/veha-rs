@@ -1,5 +1,25 @@
 # Changelog
 
+## [4.1.1] - 2025-05-09
+
+### Added
+
+- #Fähigkeit. vernetzte Bearbeitung von Motoren nach Backend: vernetzte Werte durch SQLite-Datensätze werden von anderen Motoren weiterbearbeitet
+
+### Fixed
+
+- #Fehlerbehebung. Pfad der SQLite-Datei: relative Pfad ist jetzt erkennbar.
+
+## [4.1.0] - 2025-04-11
+
+### Added
+
+- #Fähigkeit. `<backend>`Tag mit entsprechenden Gestalltung bezüglich der Architektur des Bindervorgehenweise
+
+### Changed
+
+- #Hausputz. verbesesrte Modulisierung des Schriftes/Kodes
+
 ## [3.0.0] - 2025-03-23
 
 ### Added
