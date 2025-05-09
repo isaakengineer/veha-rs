@@ -17,7 +17,7 @@ mod machine {
     pub mod press;
 }
 
-mod utils;
+pub mod utils;
 
 use clap::builder::{PossibleValuesParser, TypedValueParser};
 use clap::{self, builder::PossibleValue};

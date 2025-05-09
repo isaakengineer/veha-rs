@@ -31,60 +31,69 @@ pub fn hashmap_drucken(
                 let mut wert: String;
                 let mut tag: String;
                 if let Some(wert) = utils::attributenwert_lesen(e.clone(), "content") {
-                    if let Some(tag) = utils::attributenwert_lesen(e.clone(), "tag") {
-                        if let Some(attribute) = utils::attributenwert_lesen(e.clone(), "attribute")
-                        {
-                            let mut elem_start = BytesStart::new(tag.clone());
-                            elem_start.extend_attributes(
-                                e.attributes()
-                                    .filter(|attr| {
-                                        attr.clone().unwrap().key.local_name().as_ref()
-                                            != b"content"
-                                            && attr.clone().unwrap().key.local_name().as_ref()
-                                                != b"tag"
-                                            && attr.clone().unwrap().key.local_name().as_ref()
-                                                != b"attribute"
-                                    })
-                                    .map(|attr| attr.unwrap()),
-                            );
+                    if let Some(tagsattribute) = utils::attributenwerten_lesen(e.clone(), "tag") {
+                        let mut tagsattribute_vector = tagsattribute;
+                        if tagsattribute_vector.len() > 0 {
+                            let tag = tagsattribute_vector.remove(0);
+                            if let Some(attribute) =
+                                utils::attributenwert_lesen(e.clone(), "attribute")
+                            {
+                                let mut elem_start = BytesStart::new(tag.clone());
+                                elem_start.extend_attributes(
+                                    e.attributes()
+                                        .filter(|attr| {
+                                            attr.clone().unwrap().key.local_name().as_ref()
+                                                != b"content"
+                                                && attr.clone().unwrap().key.local_name().as_ref()
+                                                    != b"tag"
+                                                && attr.clone().unwrap().key.local_name().as_ref()
+                                                    != b"attribute"
+                                        })
+                                        .map(|attr| attr.unwrap()),
+                                );
+                                let tag_value = tagsattribute_vector.join(" ");
+                                elem_start.push_attribute(("tag".as_ref(), tag_value.as_bytes()));
 
-                            let w = match map.get(wert.as_str()) {
-                                Some(w) => w,
-                                None => {
-                                    println!("Wert nicht vorhanden!");
-                                    ""
-                                }
-                            };
-                            elem_start.push_attribute((attribute.as_bytes(), w.as_bytes()));
-                            xmlschreiber.write_event(Event::Start(elem_start));
-                            tags.push(tag);
-                            // let mut elem_end = BytesEnd::new(tag);
-                            // xml_writer.write_event(Event::End(elem_end));
-                        } else {
-                            let mut elem_start = BytesStart::new(tag.clone());
-                            elem_start.extend_attributes(
-                                e.attributes()
-                                    .filter(|attr| {
-                                        attr.clone().unwrap().key.local_name().as_ref()
-                                            != b"content"
-                                            && attr.clone().unwrap().key.local_name().as_ref()
-                                                != b"tag"
-                                    })
-                                    .map(|attr| attr.unwrap()),
-                            );
+                                let w = match map.get(wert.as_str()) {
+                                    Some(w) => w,
+                                    None => {
+                                        println!("Wert nicht vorhanden!");
+                                        ""
+                                    }
+                                };
+                                elem_start.push_attribute((attribute.as_bytes(), w.as_bytes()));
+                                xmlschreiber.write_event(Event::Start(elem_start));
+                                tags.push(tag);
+                                // let mut elem_end = BytesEnd::new(tag);
+                                // xml_writer.write_event(Event::End(elem_end));
+                            } else {
+                                let mut elem_start = BytesStart::new(tag.clone());
+                                elem_start.extend_attributes(
+                                    e.attributes()
+                                        .filter(|attr| {
+                                            attr.clone().unwrap().key.local_name().as_ref()
+                                                != b"content"
+                                                && attr.clone().unwrap().key.local_name().as_ref()
+                                                    != b"tag"
+                                        })
+                                        .map(|attr| attr.unwrap()),
+                                );
+                                let tag_value = tags.join(" ");
+                                elem_start.push_attribute(("tag".as_ref(), tag_value.as_bytes()));
 
-                            let w = match map.get(wert.as_str()) {
-                                Some(w) => w,
-                                None => {
-                                    println!("Wert nicht vorhanden!");
-                                    ""
-                                }
-                            };
-                            xmlschreiber.write_event(Event::Start(elem_start));
-                            xmlschreiber.write_event(Event::Text(BytesText::new(w)));
-                            tags.push(tag);
-                            // let mut elem_end = BytesEnd::new(tag);
-                            // xml_writer.write_event(Event::End(elem_end));
+                                let w = match map.get(wert.as_str()) {
+                                    Some(w) => w,
+                                    None => {
+                                        println!("Wert nicht vorhanden!");
+                                        ""
+                                    }
+                                };
+                                xmlschreiber.write_event(Event::Start(elem_start));
+                                xmlschreiber.write_event(Event::Text(BytesText::new(w)));
+                                tags.push(tag);
+                                // let mut elem_end = BytesEnd::new(tag);
+                                // xml_writer.write_event(Event::End(elem_end));
+                            }
                         }
                     }
                 }

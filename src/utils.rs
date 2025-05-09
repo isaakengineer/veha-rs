@@ -1,6 +1,7 @@
 pub use path::endung_mit_sprache_erweitern;
 pub use xml::attribut_vorhanden;
 pub use xml::attributenwert_lesen;
+pub use xml::attributenwerten_lesen;
 
 pub mod xml {
     use quick_xml::events::{BytesEnd, BytesStart, BytesText, Event};
@@ -49,6 +50,21 @@ pub mod xml {
                 Cow::Owned(owned) => String::from_utf8(owned).unwrap(),
             };
             Some(wert)
+        } else {
+            None
+        }
+    }
+    pub fn attributenwerten_lesen(element: BytesStart, attributename: &str) -> Option<Vec<String>> {
+        if let Some(attribute) = element.attributes().find(|attr| {
+            attr.clone().unwrap().key.local_name().as_ref() == attributename.as_bytes()
+        }) {
+            let src_name = attribute.unwrap().value;
+            let wert: String = match src_name {
+                Cow::Borrowed(borrowed) => String::from_utf8(borrowed.to_vec()).unwrap(),
+                Cow::Owned(owned) => String::from_utf8(owned).unwrap(),
+            };
+            let werten = wert.split_whitespace().map(|s| s.to_string()).collect();
+            Some(werten)
         } else {
             None
         }
