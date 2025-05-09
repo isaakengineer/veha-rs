@@ -142,7 +142,13 @@ pub fn gen_map(
 
     if fahne_backend && fahne_sqlanfang && fahne_sqlende {
         info!("Content of <sqlite> tag: {}", sqlite_content);
-        let map = process(sqlite_src, sqlite_content, sqlite_table).unwrap();
+        let sqlite_pfad = vorlagen_dir.join(sqlite_src);
+        let map = process(
+            sqlite_pfad.display().to_string(),
+            sqlite_content,
+            sqlite_table,
+        )
+        .unwrap();
         Ok(map)
     } else {
         warn!("No <sqlite> tag found or it is not properly closed.");
