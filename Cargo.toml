@@ -1,13 +1,13 @@
 [package]
 name = "veha"
-version = "4.1.1"
+version = "5.0.0"
 authors = ["Isaak Engineer <i-engineer@tutamail.com>"]
 license = "AGPL-3.0-only"
 description = "an open source utility that automates merging of written raw content and xml structures into web pages."
 readme = "README.md"
 homepage = "https://veha.techne.schloosser.com"
 repository = "https://git.schloosser.net/veha/veha-rs"
-keywords = ["cli", "xhtml", "ssr", "web", "template-engine"]
+keywords = ["html", "xhtml", "ssr", "web", "template"]
 categories = ["command-line-utilities"]
 
 edition = "2021"

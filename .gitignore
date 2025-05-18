@@ -1,3 +1,4 @@
 _.md
 /target
 /example/public
+.zed/settings.json
