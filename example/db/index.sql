@@ -1,1 +1,1 @@
-SELECT * FROM content;
+SELECT id, title, description FROM content;

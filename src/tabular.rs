@@ -11,8 +11,27 @@ use std::fs::File;
 use std::io::{self, Read};
 use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
+use rusqlite::types::ValueRef;
+use rusqlite::{Connection, Result, Row};
 
 use crate::utils;
+
+
+pub fn abfragedurchfuehren(
+	sqlite_src: String,
+	abfrage: String,
+	spalten: Vec<&str>,
+) -> Result<Vec<HashMap<String, String>>> {
+	let conn = Connection::open(sqlite_src)?;
+	let mut stmt = conn.prepare(&abfrage)?;
+	let rows = stmt.query_map([], |row| row_to_hashmap(spalten.clone(), row))?;
+
+	let mut result = Vec::new();
+	for row in rows {
+		result.push(row?);
+	}
+	Ok(result)
+}
 
 pub fn werte_ersetzen(
 		eingabe: String,
@@ -118,4 +137,23 @@ pub fn werte_ersetzen(
 			}
 		}
 		Ok(output_buffer)
+}
+
+fn row_to_hashmap(columns: Vec<&str>, row: &Row) -> rusqlite::Result<HashMap<String, String>> {
+	let mut map = HashMap::new();
+	for (i, column) in columns.iter().enumerate() {
+		let value: String = match row.get_ref(i)? {
+			ValueRef::Null => "null".to_string(),
+			ValueRef::Integer(v) => v.to_string(),
+			ValueRef::Real(v) => v.to_string(),
+			ValueRef::Text(v) => String::from_utf8_lossy(v).to_string(),
+			ValueRef::Blob(v) => v
+				.iter()
+				.map(|&b| format!("{:02x}", b))
+				.collect::<Vec<String>>()
+				.join(""),
+		};
+		map.insert(column.to_string(), value);
+	}
+	Ok(map)
 }

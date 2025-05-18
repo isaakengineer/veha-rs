@@ -1,10 +1,14 @@
 # Changelog
 
-## [5.0.0] - 2025-05-19
+## [5.1.0] - 2025-05-19
 
 ### Added
 
 - #Fähigkeit. SQL-Dateien (wenigstens SQLite) sind jetzt wie CSV-Dateien verschmelzbar.
+
+### Changed
+
+- #Fehlerbehebung. Jetzt sind komplexe SQL-Abfragen auch möglich, da anstatt alles aus dem Tabelle herauszulesen, braucht man die Struktur der Abfrage durch `columns`-Attribut eingeben.
 
 ## [4.1.1] - 2025-05-09
 

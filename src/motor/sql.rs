@@ -19,7 +19,7 @@ use crate::tabular;
 pub const SQL_TAGNAME:&[u8] = b"sql";
 pub const ERSTE_ATTRIBUT_NAME:&str = "src"; // URI zu SQL-Datei (SQL-Query)
 pub const ZWEITE_ATTRIBUT_NAME:&str = "ref"; // URI zu SQLite-Datei (SQLite-DB)
-pub const DRITTE_ATTRIBUT_NAME:&str = "table";
+pub const DRITTE_ATTRIBUT_NAME:&str = "columns";
 
 pub fn binden(
 	eingabe: String,
@@ -40,7 +40,7 @@ pub fn binden(
 	let mut datenbankpfad: std::path::PathBuf;
 	let mut sqldatei_pfadwert: Option<std::path::PathBuf> = None;
 	let mut sqldateipfad: std::path::PathBuf;
-	let mut tabellenname: String = format!("");
+	let mut columns: Vec<&str>;
 
 	let mut xml_row_pfad: std::path::PathBuf;
 
@@ -56,11 +56,10 @@ pub fn binden(
 					sqldateipfad = vorlagen_dir.join(sqldatei_uri);
 					if let Some(datenbank_uri) = utils::attributenwert_lesen(b.clone(), ZWEITE_ATTRIBUT_NAME ) {
 						datenbankpfad = vorlagen_dir.join(datenbank_uri);
-						if let Some(tablename) = utils::attributenwert_lesen(b.clone(), DRITTE_ATTRIBUT_NAME ) {
+						if let Some(columns_text) = utils::attributenwert_lesen(b.clone(), DRITTE_ATTRIBUT_NAME ) {
 							info!("1. sql file {:?}", &sqldateipfad);
 							info!("2. sqlite file {:?}", &datenbankpfad);
-							info!("3. table name {:?}", &tablename);
-							tabellenname = tablename;
+							columns = columns_text.split(' ').collect();
 							let mut sql_content = String::new();
 							let mut sql_file = fs::File::open(&sqldateipfad).unwrap_or_else(|e| {
 								error!("Failed to open the SQL file at path: {}. Error: {}",sqldateipfad.display(),e);
@@ -68,10 +67,10 @@ pub fn binden(
 							});
 							sql_file.read_to_string(&mut sql_content)
     .expect(&format!("The SQL file at location {} could not be read!", sqldateipfad.clone().display()));
-							let gelesenereihen = sqlite::process(
+							let gelesenereihen = tabular::abfragedurchfuehren(
 								datenbankpfad.display().to_string(),
 								sql_content,
-								tabellenname,
+								columns,
 							).unwrap();
 							reihen.extend(gelesenereihen.iter().cloned());
 						} else {
