@@ -1,4 +1,5 @@
 mod motor {
+	pub mod sql;
     pub mod csv;
     pub mod md;
     pub mod sqlite;
@@ -18,6 +19,7 @@ mod machine {
 }
 
 pub mod utils;
+pub mod tabular;
 
 use clap::builder::{PossibleValuesParser, TypedValueParser};
 use clap::{self, builder::PossibleValue};

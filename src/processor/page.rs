@@ -35,16 +35,23 @@ pub fn process(
         }
     };
 
-    // let mut dateien = motor::csv::werte_ersetzen(file).expect("etwas schiefgelaufen");
-    // let mut dateien = motor::csv::csv_tag_einfuellen(file, template_path).expect("error!");
-    let mut dateien = motor::md::werte_ersetzen(file, template_path.clone(), language)
+    let mut dateien = motor::sql::binden(file, template_path.clone(), language)
         .expect("something went wrong");
 
     fs::write(output_path.clone(), &dateien).expect("msg");
 
     file = std::fs::read_to_string(output_path.clone()).expect("err");
 
-    let mut dateien = motor::csv::csv_tag_einfuellen(file, template_path.clone(), language)
+    // let mut dateien = motor::csv::werte_ersetzen(file).expect("etwas schiefgelaufen");
+    // let mut dateien = motor::csv::csv_tag_einfuellen(file, template_path).expect("error!");
+    dateien = motor::md::werte_ersetzen(file, template_path.clone(), language)
+        .expect("something went wrong");
+
+    fs::write(output_path.clone(), &dateien).expect("msg");
+
+    file = std::fs::read_to_string(output_path.clone()).expect("err");
+
+    dateien = motor::csv::csv_tag_einfuellen(file, template_path.clone(), language)
         .expect("something went wrong");
 
     fs::write(output_path.clone(), &dateien).expect("msg");

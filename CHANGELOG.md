@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.0.0] - 2025-05-19
+
+### Added
+
+- #Fähigkeit. SQL-Dateien (wenigstens SQLite) sind jetzt wie CSV-Dateien verschmelzbar.
+
 ## [4.1.1] - 2025-05-09
 
 ### Added

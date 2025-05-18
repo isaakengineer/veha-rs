@@ -81,7 +81,7 @@ fn query_to_map(
     Ok(result)
 }
 
-fn process(
+pub fn process(
     sqlite_src: String,
     query: String,
     table_name: String,
