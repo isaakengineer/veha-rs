@@ -4,6 +4,18 @@
 
 You can think of **veha-rs** as LaTex for content rich web pages, or as an incremental evolution to _PHP_, combined with _component-based_ approaches in _modern HTML_.
 
+## ❤️ Support this project
+
+If you like this project and want to support it, feel free to send a small donation (Bitcoin):
+
+`bc1qtmvkgp3d9svpq8622shxvmjccmu3pz6k8yh4a`
+
+or the universal code:
+
+`PM8TJKkg86BgcFHNTe2bxjJiJk921QMyjfeQVtmAKSk644EZcmgcrqZaVLewFA61rra8sZRxXZHu18TzHzaPAPHBEH49xTyjAwx8gH5Qd2KuJK3Z5w8L`
+
+The donated funds will be used exclusively for [server costs / development / documentation]. Thank you for your support!
+
 ## Features
 
 - **Easy** learn only a few extra [XML] tags, and you can create content-rich [static] websites
