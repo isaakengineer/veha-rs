@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Namenänderung für XML `<template>` nach `<layout>` (ähnlich wie alte Svelte und besser mit AlpineJS einbinden)
 - #Baukastenprinzip. Module `Tabular.rs` zusammen nutzen.
 
 ### Fixed
