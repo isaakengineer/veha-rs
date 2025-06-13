@@ -1,5 +1,16 @@
 # Changelog
 
+## [unreleaseed]
+
+### Changed
+
+- #Baukastenprinzip. Module `Tabular.rs` zusammen nutzen.
+
+### Fixed
+
+- #Fehlerbehebung. #Zusammenarbeit: MD am Ende nutzen so dass `<md>`-Tags es von anderen Motoren gefüllt werden kann.
+- #Verbesserung. bessere Logmeldung ausgabe (für MD pfad)
+
 ## [5.1.0] - 2025-05-19
 
 ### Added
