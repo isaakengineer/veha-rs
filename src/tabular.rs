@@ -144,7 +144,7 @@ fn row_to_hashmap(columns: Vec<&str>, row: &Row) -> rusqlite::Result<HashMap<Str
 	let mut map = HashMap::new();
 	for (i, column) in columns.iter().enumerate() {
 		let value: String = match row.get_ref(i)? {
-			ValueRef::Null => "null".to_string(),
+			ValueRef::Null => "".to_string(),
 			ValueRef::Integer(v) => v.to_string(),
 			ValueRef::Real(v) => v.to_string(),
 			ValueRef::Text(v) => String::from_utf8_lossy(v).to_string(),
