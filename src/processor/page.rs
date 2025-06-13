@@ -38,14 +38,10 @@ pub fn process(
     let mut dateien = motor::sql::binden(file, template_path.clone(), language)
         .expect("something went wrong");
 
-    fs::write(output_path.clone(), &dateien).expect("msg");
-
-    file = std::fs::read_to_string(output_path.clone()).expect("err");
-
-    // let mut dateien = motor::csv::werte_ersetzen(file).expect("etwas schiefgelaufen");
-    // let mut dateien = motor::csv::csv_tag_einfuellen(file, template_path).expect("error!");
-    dateien = motor::md::werte_ersetzen(file, template_path.clone(), language)
-        .expect("something went wrong");
+    // Ensure all parent directories exist
+    if let Some(parent) = output_path.parent() {
+        fs::create_dir_all(parent).expect("Failed to create directories");
+    }
 
     fs::write(output_path.clone(), &dateien).expect("msg");
 
@@ -64,7 +60,16 @@ pub fn process(
 
     file = std::fs::read_to_string(output_path.clone()).expect("err");
 
-    let mut dateien = motor::toml::transform(file, &template_path.as_path(), language)
+    dateien = motor::toml::transform(file, &template_path.as_path(), language)
+        .expect("something went wrong").into();
+
+    fs::write(output_path.clone(), &dateien).expect("msg");
+
+    file = std::fs::read_to_string(output_path.clone()).expect("err");
+
+    // let mut dateien = motor::csv::werte_ersetzen(file).expect("etwas schiefgelaufen");
+    // let mut dateien = motor::csv::csv_tag_einfuellen(file, template_path).expect("error!");
+    dateien = motor::md::werte_ersetzen(file, template_path.clone(), language)
         .expect("something went wrong");
 
     fs::write(output_path.clone(), &dateien).expect("msg");
