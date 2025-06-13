@@ -41,7 +41,7 @@ pub fn werte_ersetzen(
                         md_src_pfad = utils::endung_mit_sprache_erweitern(&md_src_pfad, language);
                     }
                     let mut file = std::fs::read_to_string(&md_src_pfad)
-                        .expect("The path provieded via CLI could not be read!");
+                        .expect(&format!("The markdown file path ='{}' could not be read.", md_src_pfad.display().to_string()));
                     // let mut options = Options::default();
                     // options.extension.footnotes = true;
                     // let mut html = markdown_to_html(&file, &options);
