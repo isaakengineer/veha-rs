@@ -40,7 +40,7 @@ pub fn binden(
 	let mut datenbankpfad: std::path::PathBuf;
 	let mut sqldatei_pfadwert: Option<std::path::PathBuf> = None;
 	let mut sqldateipfad: std::path::PathBuf;
-	let mut columns: Vec<&str>;
+	let mut columns: Vec<String>;
 
 	let mut xml_row_pfad: std::path::PathBuf;
 
@@ -59,7 +59,7 @@ pub fn binden(
 						if let Some(columns_text) = utils::attributenwert_lesen(b.clone(), DRITTE_ATTRIBUT_NAME ) {
 							info!("1. sql file {:?}", &sqldateipfad);
 							info!("2. sqlite file {:?}", &datenbankpfad);
-							columns = columns_text.split(' ').collect();
+							columns = columns_text.split(' ').map(|s| s.to_string()).collect();
 							let mut sql_content = String::new();
 							let mut sql_file = fs::File::open(&sqldateipfad).unwrap_or_else(|e| {
 								error!("Failed to open the SQL file at path: {}. Error: {}",sqldateipfad.display(),e);

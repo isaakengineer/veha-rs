@@ -20,10 +20,11 @@ use crate::utils;
 pub fn abfragedurchfuehren(
 	sqlite_src: String,
 	abfrage: String,
-	spalten: Vec<&str>,
+	spalten: Vec<String>,
 ) -> Result<Vec<HashMap<String, String>>> {
 	let conn = Connection::open(sqlite_src)?;
 	let mut stmt = conn.prepare(&abfrage)?;
+	let spalten: Vec<&str> = spalten.iter().map(|s| s.as_str()).collect();
 	let rows = stmt.query_map([], |row| row_to_hashmap(spalten.clone(), row))?;
 
 	let mut result = Vec::new();

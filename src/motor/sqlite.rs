@@ -7,8 +7,11 @@ use rusqlite::{Connection, Result, Row};
 use serde::Serialize;
 use serde_json::{Map, Value};
 use std::collections::HashMap;
+use std::fs;
+use std::fs::File;
+use std::io::{self, Read};
 
-use crate::utils;
+use crate::{tabular, utils};
 
 fn get_table_schema(conn: &Connection, table_name: &str) -> Result<Vec<(String, String)>> {
     let mut stmt = conn.prepare(&format!("PRAGMA table_info({})", table_name))?;
@@ -106,10 +109,12 @@ pub fn gen_map(
     let mut fahne_sqlanfang = false;
     let mut fahne_sqlende = false;
     let mut fahne_backend = false;
+    let mut fahne_sqlite_ref = false;
 
-    let mut sqlite_content = String::new();
+    let mut sql_content = String::new();
     let mut sqlite_src = String::new();
     let mut sqlite_table = String::new();
+    let mut columns: Vec<String> = Vec::new();
 
     loop {
         match xmlleser.read_event() {
@@ -119,14 +124,24 @@ pub fn gen_map(
                     fahne_backend = true;
                     if let Some(src) = utils::attributenwert_lesen(e.clone(), "src") {
                         sqlite_src = src;
-                        if let Some(table) = utils::attributenwert_lesen(e.clone(), "table") {
-                            sqlite_table = table;
+                        if let Some(columns_text) = utils::attributenwert_lesen(e.clone(), "columns") {
+                       		columns = columns_text.split(' ').map(|s| s.to_string()).collect();
+                        	if let Some(sqldatei_uri) = utils::attributenwert_lesen(e.clone(), "ref" ) {
+                         		let sqldateipfad = vorlagen_dir.join(sqldatei_uri);
+								let mut sql_file = fs::File::open(&sqldateipfad).unwrap_or_else(|e| {
+									error!("Failed to open the SQL file at path: {}. Error: {}",sqldateipfad.display(),e);
+	                           		panic!("The path for SQL-file could not be opened!");
+								});
+								sql_file.read_to_string(&mut sql_content)
+	                       .expect(&format!("The SQL file at location {} could not be read!", sqldateipfad.clone().display()));
+								fahne_sqlite_ref = true;
+	                        }
                         }
                     }
                 }
             }
-            Ok(Event::Text(e)) if fahne_sqlanfang && !fahne_sqlende => {
-                sqlite_content.push_str(&e.unescape()?);
+            Ok(Event::Text(e)) if fahne_sqlanfang && !fahne_sqlende && !fahne_sqlite_ref => {
+                sql_content.push_str(&e.unescape()?);
             }
             Ok(Event::End(e)) if e.local_name().as_ref() == b"sqlite" => {
                 fahne_sqlende = true;
@@ -141,12 +156,14 @@ pub fn gen_map(
     }
 
     if fahne_backend && fahne_sqlanfang && fahne_sqlende {
-        info!("Content of <sqlite> tag: {}", sqlite_content);
+        info!("Content of <sqlite> tag: {}", sql_content);
         let sqlite_pfad = vorlagen_dir.join(sqlite_src);
-        let map = process(
+        // let map = process(
+        let map = tabular::abfragedurchfuehren(
             sqlite_pfad.display().to_string(),
-            sqlite_content,
-            sqlite_table,
+            sql_content,
+            // sqlite_table,
+            columns,
         )
         .unwrap();
         Ok(map)
