@@ -8,6 +8,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
+use log::{info, warn, error};
 
 use crate::motor::csv;
 use crate::utils;
@@ -42,10 +43,20 @@ pub fn werte_ersetzen(
                     }
                     let mut file = std::fs::read_to_string(&md_src_pfad)
                         .expect(&format!("The markdown file path ='{}' could not be read.", md_src_pfad.display().to_string()));
+                    info!("Motor::MD:: processing file: {},", &md_src_pfad.display());
                     // let mut options = Options::default();
                     // options.extension.footnotes = true;
                     // let mut html = markdown_to_html(&file, &options);
-                    let mut html = markdown::to_html_with_options(&file, &markdown::Options::gfm())
+                    let options = markdown::Options {
+                    	compile: markdown::CompileOptions {
+                          allow_dangerous_html: true,
+                          allow_dangerous_protocol: true,
+                          ..markdown::CompileOptions::default()
+                        },
+
+                        ..markdown::Options::gfm() // Use GitHub Flavored Markdown as the base
+                    };
+                    let mut html = markdown::to_html_with_options(&file, &options)
                         .unwrap_or("".to_string());
 
                     if let Some(tag) = csv::attributenwert_lesen(e.clone(), "tag") {

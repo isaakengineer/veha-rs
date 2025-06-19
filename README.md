@@ -95,7 +95,7 @@ git clone https://git.schloosser.net/veha/veha-rs.git
 
 cargo install
 
-cargo run -- <input_file> <template_diretory> <output_file>
+cargo run -- <input_file> <layout_diretory> <output_file>
 ```
 
 ### Step 2. Usage
@@ -113,7 +113,7 @@ The `page` subcommand processes a single XHTML page using the provided template 
 #### Usage
 
 ```
-veha page <template> <input> <output> [--language <language_code>]
+veha page <layout> <input> <output> [--language <language_code>]
 ```
 
 #### Arguments
@@ -130,7 +130,7 @@ The `site` subcommand processes multiple XHTML pages using a mapping file that s
 #### Usage
 
 ```
-veha site <template> <map> [--language <language_code>]
+veha site <layout> <map> [--language <language_code>]
 ```
 
 #### Arguments
@@ -170,12 +170,12 @@ otherwise if no input language is provided, the default file name will be read. 
 
 #### XHTML Template file (Required)
 
-In the input file, you need to wrap all you wish to be included in your output file within a `<template>` tag:
+In the input file, you need to wrap all you wish to be included in your output file within a `<layout>` tag:
 
 ```
-<template src="./relative-path-to-template.xhtml">
+<layout src="./relative-path-to-template.xhtml">
 <...>
-</template>
+</layout>
 ```
 
 and within your template directory, you need to include an empty `<slot>` tag which will be replaced with the content between the pervious tags.

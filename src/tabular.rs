@@ -53,6 +53,7 @@ pub fn werte_ersetzen(
 
 		let mut tags: Vec<String> = Vec::new();
 		let mut column_zahl = 0;
+		let mut fahne_skip = false;
 
 		loop {
 			match xml_reader.read_event() {
@@ -87,9 +88,15 @@ pub fn werte_ersetzen(
 										""
 									}
 								};
-								elem_start.push_attribute((attribute.as_bytes(), w.as_bytes()));
-								xml_writer.write_event(Event::Start(elem_start));
+								if w != "" {
+									elem_start.push_attribute((attribute.as_bytes(), w.as_bytes()));
+									xml_writer.write_event(Event::Start(elem_start));
+								} else {
+									warn!("Value was set to NULL, hence it will be skipped");
+									fahne_skip = true;
+								}
 								tags.push(tag);
+
 								// let mut elem_end = BytesEnd::new(tag);
 								// xml_writer.write_event(Event::End(elem_end));
 							} else {
@@ -112,8 +119,14 @@ pub fn werte_ersetzen(
 										""
 									}
 								};
-								xml_writer.write_event(Event::Start(elem_start));
-								xml_writer.write_event(Event::Text(BytesText::new(w)));
+								if w != "" {
+									xml_writer.write_event(Event::Start(elem_start));
+									xml_writer.write_event(Event::Text(BytesText::new(w)));
+
+								} else {
+									warn!("Value was set to NULL, hence it will be skipped");
+									fahne_skip = true;
+								}
 								tags.push(tag);
 								// let mut elem_end = BytesEnd::new(tag);
 								// xml_writer.write_event(Event::End(elem_end));
@@ -126,8 +139,12 @@ pub fn werte_ersetzen(
 					column_zahl = column_zahl - 1;
 					// println!("tags = {:?}", tags);
 					let tag = tags.pop().unwrap();
-					let mut elem_end = BytesEnd::new(tag);
-					xml_writer.write_event(Event::End(elem_end));
+					if !fahne_skip {
+						let mut elem_end = BytesEnd::new(tag);
+						xml_writer.write_event(Event::End(elem_end));
+					} else {
+						fahne_skip = false;
+					}
 				}
 				Ok(Event::Eof) => break,
 				Ok(e) => {

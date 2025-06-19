@@ -4,6 +4,7 @@ use std::fs::{create_dir_all, File};
 use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
+use log;
 
 use crate::{machine, motor, processor};
 
@@ -19,6 +20,8 @@ fn ausgabepfadersteller(path: PathBuf, params: HashMap<String, String>) -> PathB
         let placeholder = format!("+{{{}}}", key);
         result = result.replace(&placeholder, &value);
     }
+
+    log::info!("Ausgabepfad erstellt: {:?}", result);
 
     PathBuf::from(result)
 }
@@ -48,7 +51,7 @@ pub fn binden(
 ) {
     let mut eingabedatei: (Vec<u8>, Vec<u8>) = (Vec::new(), Vec::new());
     let mut map: Vec<HashMap<String, String>> = Vec::new();
-
+    log::info!("binden mit {:?}, {:?}, {:?}", template_path, eingabepfad, ausgabepfad);
     match kennzeichen_ausgeben(ausgabepfad.clone()) {
         Some(name) => {
             let mut file = match std::fs::read_to_string(&eingabepfad) {
@@ -114,19 +117,38 @@ pub fn binden(
 }
 
 pub fn kennzeichen_ausgeben(pfad: std::path::PathBuf) -> Option<String> {
-    let dateiname = pfad.file_stem().and_then(|name| name.to_str());
-    log::info!("Dateiname = {:?}", dateiname.clone());
-    if let Some(dateiname) = dateiname {
-        if let Some(start) = dateiname.find(COLLECTION_SIGN_START) {
-            if let Some(ende) = dateiname.find(COLLECTION_SIGN_END) {
-                if start < ende && dateiname.chars().nth(start - 1) == Some(EXPANSION_SIGN) {
-                    let key = &dateiname[start + 1..ende];
-                    return Some(key.to_string());
+	for component in pfad.components() {
+        if let Some(stem) = component.as_os_str().to_str() {
+            // Check if the stem contains the specific pattern
+            if let Some(plus_pos) = stem.find('+') {
+                if let Some(open_brace_pos) = stem.find('{') {
+                    if let Some(close_brace_pos) = stem.find('}') {
+                        // Ensure the positions are in the correct order
+                        if plus_pos < open_brace_pos && open_brace_pos < close_brace_pos {
+                            // Extract the content between `{` and `}`
+                            let key = &stem[open_brace_pos + 1..close_brace_pos];
+                            return Some(key.to_string());
+                        }
+                    }
                 }
             }
         }
     }
-    return None;
+    None
+
+    // let dateiname = pfad.file_stem().and_then(|name| name.to_str());
+    // log::info!("Dateiname = {:?}", dateiname.clone());
+    // if let Some(dateiname) = dateiname {
+    //     if let Some(start) = dateiname.find(COLLECTION_SIGN_START) {
+    //         if let Some(ende) = dateiname.find(COLLECTION_SIGN_END) {
+    //             if start < ende && dateiname.chars().nth(start - 1) == Some(EXPANSION_SIGN) {
+    //                 let key = &dateiname[start + 1..ende];
+    //                 return Some(key.to_string());
+    //             }
+    //         }
+    //     }
+    // }
+    // return None;
 
     // let endung = pfad.extension().and_then(|ext| ext.to_str());
     // match endung {
